@@ -17,6 +17,8 @@ import HelpButton from "../HelpButton";
 
 import ResetButton from "../ResetButton";
 
+import DownloadButton from "../DownloadBtn";
+
 function idCellRenderer(params) {
   return (
     <a
@@ -133,9 +135,10 @@ class MaterialDataGrid extends React.Component {
     this.state = {
       columnDefs: this.getColumnDefs(),
       numRows: null,
+      filteredRows: [], 
     };
     this.gridApi = null;
-    this.gridColumnApi = null;
+    this.gridColumnApi = null; 
   }
 
   componentDidUpdate(prevProps) {
@@ -149,6 +152,23 @@ class MaterialDataGrid extends React.Component {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
     this.gridApi.onFilterChanged();
+    this.setState({ filteredRows: this.props.rows });
+    params.api.addEventListener('filterChanged', () => {
+      const filteredRows = this.getFilteredRows(params.api);
+      this.setState({ filteredRows });
+    });
+  };
+
+  getFilteredRows = (gridApi) => {
+    const filteredRows = [];
+    const count = gridApi.getDisplayedRowCount();
+  
+    for (let i = 0; i < count; i++) {
+      const rowNode = gridApi.getDisplayedRowAtIndex(i);
+      filteredRows.push(rowNode.data);
+    }
+  
+    return filteredRows;
   };
 
   getColumnDefs() {
@@ -242,7 +262,7 @@ class MaterialDataGrid extends React.Component {
       if (this.state.numRows != nRows) this.setState({ numRows: nRows });
     }
   };
-
+  
   doesExternalFilterPass = (node) => {
     if (node.data) {
       if (this.props.ptable_filter["mode"] == "exact") {
@@ -274,6 +294,7 @@ class MaterialDataGrid extends React.Component {
     }
     return true;
   };
+
   // -------------------------------
 
   render() {
@@ -301,6 +322,7 @@ class MaterialDataGrid extends React.Component {
               colDefs={this.getColumnDefs().slice(1)}
             />
             <ResetButton gridApi={this.gridApi} doesExternalFilterPass={this.doesExternalFilterPass} />
+            <DownloadButton filteredElements={this.state.filteredRows} />
           </div>
         </div>
         <div className="ag-theme-alpine">
