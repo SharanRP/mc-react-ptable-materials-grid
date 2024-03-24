@@ -15,7 +15,7 @@ import CustomHeader from "./CustomHeader";
 
 import HelpButton from "../HelpButton";
 
-import ResetButton from "../ResetButton";
+import ResetButton from "./ResetButton";
 
 import DownloadButton from "../DownloadBtn";
 
@@ -253,6 +253,7 @@ class MaterialDataGrid extends React.Component {
   // External filter handling
 
   isExternalFilterPresent = () => {
+
     return Object.keys(this.props.ptable_filter["elements"]).length > 0;
   };
 
@@ -314,6 +315,7 @@ class MaterialDataGrid extends React.Component {
             Showing {this.state.numRows} entries out of {this.props.rows.length}
           </span>
           <div className="grid_header_row_right_side">
+            <ResetButton gridApi={this.gridApi} doesExternalFilterPass={this.doesExternalFilterPass} rows={this.props.rows} filteredElements={this.state.filteredRows} />
             <div className="help-button-container">
               <HelpButton popover={helpPopover} placement="left" />
             </div>
@@ -321,7 +323,6 @@ class MaterialDataGrid extends React.Component {
               onColumnToggle={this.handleColumnToggle}
               colDefs={this.getColumnDefs().slice(1)}
             />
-            <ResetButton gridApi={this.gridApi} doesExternalFilterPass={this.doesExternalFilterPass} />
             <DownloadButton filteredElements={this.state.filteredRows} />
           </div>
         </div>
